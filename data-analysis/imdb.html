@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>IMDb Data Analysis</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet"
+      			href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<a href="../index.html" class="logo">nocab</a>
+				</header>
+
+				<!-- Nav -->
+					<nav id="nav">
+						<ul class="links">
+							<li><a href="../index.html">Main Page</a></li>
+							<li><a href="../software-engineering/softwareengineering.html">Software Engineering</a></li>
+							<li><a href="../data-analysis/dataanalysis.html">Data Analysis</a></li>
+							<li><a href="../about.html">About</a></li>
+						</ul>
+						<ul class="icons">
+							<li><a href="https://github.com/nocab-tech" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+				<div id="main">
+
+						
+					<!-- Post -->
+						<section class="post">
+							<header class="major">
+								<span class="date">16th March 2023</span>
+								<h1>IMDb Data Analysis</h1>
+								<h6>Completed Project</h6>
+								<p>This project served as an opportunity to expand my knowledge and skills in data analysis. The primary objectives were to practice data cleaning and visualization techniques, which had not been previously explored. Leveraging tools such as NumPy, Pandas, and Matplotlib, I obtained the dataset of IMDb Top 1000 Movies and performed data cleaning to the best of my abilities. Upon cleaning the data, I conducted basic analysis and visualization to derive meaningful insights.</p>
+								<p>Based on extensive research into real-world questions and a thorough review of the CSV file, I established specific research questions to guide the analysis. Through this project, I demonstrate an understanding of data cleaning, visualization, and data analysis as a whole, further augmenting my proficiency in this field.</p>
+								<h4><a href="../data-analysis/imdb_2.html">Code Explanation on Page 2</a></h4>
+
+								<a href="https://github.com/nocab-tech" target="_blank" class="button"><i class="icon brands fa-github"></i> GitHub</button></a>
+							</header>
+						</section>
+						<section class="posts">
+							<article>
+								<header>
+									<h2>Data Analysis Goals</h2>
+								</header>
+								<p>
+									1. Properly clean the data.<br />
+									2. Ensure accurate and legible visualization of data<br />
+									3. Answer all my questions<br />
+								</p>
+							</article>
+							<article>
+								<header>
+									<h2>Questions to answer</h2>
+								</header>
+								<p>
+									1. What are the trends for movie grosses over time, as they relate to release date?<br />
+									2. What are the trends for movie Metascores over time, as they relate to release date?<br />
+									3. Based on the analysis of Gross and Metascores over time, what insights can be gained from the data?<br />
+									4. What is the correlation between the number of votes a movie receives and its Metascore or IMDB rating?<br />
+								</p>
+							</article>
+						</section>
+						
+						<section>
+							<header id="Question1">
+								<h3>What are the trends for movie grosses over time, as they relate to release date?</h3>
+								<p>In order to explore the trends in movie grosses over time with respect to release date, a thorough data cleaning process was undertaken to ensure the accuracy and quality of the results. The data set revealed a significant amount of missing data in the Gross column, which could potentially impact the precision of the findings. To visualize the trends effectively, Matplotlib was utilized to plot a line graph with a line of best fit.</p>
+								<img src="images/imdb/Yearly Gross.png" alt="" class="image fit"/>
+								<p>The resulting graph indicates a positive upward trend in movie grosses over time, as they relate to release date. However, it is essential to note that the data set considered only the top 1000 movies, which may limit the generalizability of the results. In this regard, it is crucial to acknowledge the potential limitations of the data set and their implications for the accuracy and generalizability of the findings. It is worth noting that I delve further into the limitations of this data set in the question <a href="#Question3">"Based on the analysis of Gross and Metascores over time, what insights can be gained from the data?"</a>, which offers a more comprehensive assessment of the insights gained from analyzing gross and metascores over time.</p>
+							</header>
+						</section>
+						<section>
+							<header id="Question2">
+								<h3>What are the trends for movie Metascores over time, as they relate to release date?</h3>
+								<p>To examine the trends in movie Metascores over time in relation to release date, the script was modified to analyze the Meta_Score and Release Date columns. The same data cleaning process was carried out to ensure accurate results. The analysis revealed an unexpected outcome, as depicted in the graph. While it is commonly assumed that the average Metascore of movies would increase with time in the film industry, the results indicate a downward trend instead.</p>
+								<img src="images/imdb/Yearly Rating.png" alt="" class="image fit"/>
+								<p>Despite this surprising finding, several hypotheses could explain this trend, which will be further discussed in <a href="Question3">"Based on the analysis of Gross and Metascores over time, what insights can be gained from the data?"</a> It is important to note that this limited analysis only considers the top 1000 movies, and there may be variations when considering a broader set of movies. Nonetheless, this initial observation suggests that the relationship between release date and Metascores over time is complex and warrants further investigation.</p>
+							</header>
+						</section>
+						<section>
+							<header id="Question3">
+								<h3>Looking at Gross over time and Metascores over time, what does it show?</h3>
+								<p>Upon analysis of the dataset, it is evident that there are some unusual trends in the data. Specifically, the Gross data shows an upward trend over time, indicating that movies tend to have a higher gross value as time progresses. This trend may be attributed to several factors.</p>
+								<p>Firstly, it is plausible that the increased spending on advertising in recent years, as compared to the 1970s, has led to more widespread awareness of new movie releases. Consequently, people may be more likely to visit cinemas, thereby contributing to the upward trend observed in Gross data.</p>
+								<p>Additionally, the ticket prices in 1977, which were roughly $2.30, when adjusted for inflation would be approximately $9.26 in today's currency. As inflation adjustment is not always incorporated in IMDb data, it is possible that the Gross data may not have been adjusted for inflation. Therefore, this could be a factor contributing to the upward trend observed in Gross data.</p>
+								<p>However, while Gross in relation to release date had an upward trend, Metascore to release date had a downward trend. This trend is inconsistent with the upward trend observed in Gross data and may be attributed to the increased availability of resources that enable more people to create and publish movies. This phenomenon may have resulted in a drop in the quality of movies as more people focus on quantity over quality. Nevertheless, it is worth noting that the dataset of the top 1000 movies used for this analysis may not be adequate to study this trend.</p>
+								<p>Finally, it is important to consider the possibility of bias, particularly nostalgia bias, influencing the ratings of older movies. People tend to remember past experiences more favorably than they actually were, leading to a potential inflation of ratings for older movies. For instance, individuals may rate a movie from their childhood more highly due to fond memories, despite it not objectively deserving such a rating.</p>
+								<p>To conclude upon examination of the Gross and Metascores data over time, several trends have emerged. Gross data has demonstrated an upward trend, suggesting that movies tend to have a higher gross value as time progresses. This trend may be attributed to increased advertising spending and unadjusted inflation. However, Metascores data exhibits a downward trend, potentially due to the increased availability of resources enabling more people to create and publish movies, resulting in a drop in the quality of movies. It is important to acknowledge that the dataset used in this analysis may not be adequate to study this trend. Additionally, it is important to consider the potential influence of bias, particularly nostalgia bias, on the ratings of older movies. Overall, further analysis and exploration are required to fully understand the trends observed in the Gross and Metascores data over time.</p>
+							</header>
+						</section>
+
+					<!-- Footer -->
+					<footer>
+						<div class="pagination">
+							<!--<a href="#" class="previous">Prev</a>-->
+							<a class="page active">1</a>
+							<a href="../data-analysis/imdb_2.html" class="page">2</a>
+							<a href="../data-analysis/imdb_2.html" class="next">Next</a>
+						</div>
+					</footer>
+				</div>
+
+				<!-- Footer -->
+
+				<footer id="footer">
+				
+					<section>
+						<form method="post" action="https://formsubmit.co/brianbasnet98@gmail.com">
+							<div class="fields">
+								<div class="field">
+									<label for="name">Name</label>
+									<input type="text" name="name" id="name" />
+								</div>
+								<div class="field">
+									<label for="email">Email</label>
+									<input type="text" name="email" id="email" />
+								</div>
+								<div class="field">
+									<label for="message">Message</label>
+									<textarea name="message" id="message" rows="2"></textarea>
+								</div>
+							</div>
+							<ul class="actions">
+								<li><input type="submit" value="Send Message" /></li>
+							</ul>
+						</form>
+					</section>
+					<section class="split contact">
+						<section>
+							<h3>Phone</h3>
+							<p>+44 7342 241467</p>
+						</section>
+						<section>
+							<h3>Email</h3>
+							<p>brianbasnet98@gmail.com</p>
+						</section>
+						<section>
+							<h3>Social</h3>
+							<ul class="icons alt">
+								<li><a href="https://github.com/nocab-tech" target="_blank" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+							</ul>
+						</section>
+					</section>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+			<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+			<script>
+				hljs.highlightAll();
+			</script>
+
+	</body>
+</html>

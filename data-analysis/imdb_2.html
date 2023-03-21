@@ -1,0 +1,314 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>IMDb Data Analysis</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet"
+      			href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<a href="../index.html" class="logo">nocab</a>
+				</header>
+
+				<!-- Nav -->
+					<nav id="nav">
+						<ul class="links">
+							<li><a href="../index.html">Main Page</a></li>
+							<li><a href="../software-engineering/softwareengineering.html">Software Engineering</a></li>
+							<li><a href="../data-analysis/dataanalysis.html">Data Analysis</a></li>
+							<li><a href="../about.html">About</a></li>
+						</ul>
+						<ul class="icons">
+							<li><a href="https://github.com/nocab-tech" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+				<div id="main">
+
+						<section>
+							<header class="major">
+								<h1>Detailed Code Explanation</h1>
+								<p>This page serves as a comprehensive resource for the code used to obtain the answers presented on the previous page. It contains the scripts, data cleaning procedures, and the code for the analysis and visualization of the data. This collection of code provides a robust foundation for reproducing the results of the data analysis and allows for future exploration and expansion of the project.
+								</p>
+							</header>
+						</section>
+						<section>
+							</header>
+							<h3>Essential Python Modules for Data Visualization, Data Cleaning, and Data Analysis</h3><pre><code class="language-python">
+
+import csv                      ### Used to Read the CSV file. (Dataset)
+import pandas as pd             ### This is the majority module used. (Data Cleaning and Analysis)
+import matplotlib.pyplot as plt ### This is used for Data Visualization.
+import numpy as np              ### Used for some Data Cleaning.
+
+								</code></pre>
+						</section>
+						<section>
+							<h3>Extracting Relevant Data from a CSV File and Creating a Dictionary</h3><pre><code class="language-python">
+
+### Open CSV File and Extract Relevant Data (Removes First Column which is links to Movie Posters)
+
+with open('imdb_top_1000.csv', encoding='iso-8859-1', newline='') as csvfile:  ## Open the CSV file and set the encoding to iso-8859-1
+	reader = csv.reader(csvfile)  ## Create a CSV reader object
+	next(reader)  ## Skip the header row
+	
+	for row in reader:  ## Loop through each row in the CSV file
+		key = row[0]  ## Set the first column as the key
+		values = row[1:]  ## Set the remaining columns as the values
+		
+		imdb_dict[key] = values  ## Add the key and values to the imdb_dict dictionary
+
+								</code></pre>
+							<p>This code snippet is responsible for opening a CSV file containing information on the top 1000 movies on IMDb and extracting the relevant data. The file is opened using the 'open' function with the appropriate encoding and the CSV data is read using the 'csv.reader' object. The first row (header row) of the CSV file is skipped using the 'next' function.</p>
+							<p>The remaining rows of data are then processed using a 'for' loop that iterates over each row. The first column of each row is set as the key in a dictionary, and the remaining columns are set as the values. This data is stored in a dictionary named 'imdb_dict'.</p>
+							<p>Overall, this code is a simple but essential tool for quickly and easily extracting data from a CSV file in Python.</p>
+						</section>
+						<section>
+							<h3>Converting a Python Dictionary to a Pandas DataFrame</h3><pre><code class="language-python">
+
+### Convert the dictionary to a pandas DataFrame
+df = pd.DataFrame.from_dict(imdb_dict, orient='index', columns=['Series_Title','Released_Year','Certificate','Runtime','Genre','IMDB_Rating','Overview','Meta_score','Director','Star1','Star2','Star3','Star4','No_of_Votes','Gross'])
+
+								</code></pre>
+							<p>This code snippet converts a Python dictionary containing information on the top 1000 movies from IMDb into a Pandas DataFrame. It does so by utilizing the pd.DataFrame.from_dict function, which creates a DataFrame using the dictionary as the input data.</p>
+							<p>The dictionary contains various pieces of information on each movie, including the movie's title, release year, runtime, genre, rating, director, stars, and other data points. By converting the dictionary to a DataFrame, the data can be easily sorted, filtered, and analyzed using Pandas functions.</p>
+						</section>
+						<section>
+							<h3>Data Cleaning and Type Conversion Pipeline for Movie Data</h3><pre><code class="language-python">
+
+# Remove rows with missing values. This is a good practice even if there are currently no missing values.
+df.dropna(inplace=True)
+
+# Convert data types. Only change some columns.
+df['Released_Year'] = pd.to_numeric(df['Released_Year'], errors='coerce')
+df['Runtime'] = df['Runtime'].str.replace(' min', '').astype(int)
+df['IMDB_Rating'] = df['IMDB_Rating'].astype(float)
+df['Meta_score'] = pd.to_numeric(df['Meta_score'], errors='coerce')
+df['No_of_Votes'] = df['No_of_Votes'].str.replace(',', '').astype(int)
+
+# Replace commas with empty space in 'Gross' column, then convert to numeric data type with 'Int64' as a nullable integer
+df['Gross'] = df['Gross'].str.replace(',', '')
+df['Gross'] = pd.to_numeric(df['Gross'], errors='coerce').astype('Int64')
+								
+								</code></pre>
+							<p>This code snippet is a data cleaning and type conversion pipeline for movie data. The pipeline consists of several steps that clean and convert various columns of a movie dataset. First, the pipeline removes any rows with missing values. Then, it converts the data types of certain columns to a more appropriate format.</p>
+							<p>By applying this pipeline to a movie dataset, the data can be cleaned and standardized for further analysis or visualization.</p>
+						</section>
+						<section>
+							<header class="major">
+								<h1>Scripts</h1>
+								<p> These scripts were used to create data visualization that was used for the analysis of this data set.
+								</p>
+							</header>
+						</section>
+						<section>
+							<h3>Visualization of Average Yearly Gross of Movies</h3><pre><code class="language-python">
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Fit a line to the data using NumPy's polyfit function
+fit = np.polyfit(yearly_gross.index, yearly_gross.values, 1)
+fit_fn = np.poly1d(fit)
+
+# Plot the data and the line of best fit
+plt.plot(yearly_gross.index, yearly_gross.values)
+plt.plot(yearly_gross.index, fit_fn(yearly_gross.index), '--r')
+
+# Set the x and y axis labels and the plot title
+plt.xlabel('Release Year')
+plt.ylabel('Average Gross (in tens of millions of dollars)')
+plt.title('Correlation between Release Year and Gross')
+
+# Set the x-axis tick marks to increment by 5 years and y-axis tick marks to increment by 100 million dollars
+plt.xticks(np.arange(1920, yearly_gross.index.max()+5, 5))
+plt.yticks(np.arange(0, yearly_gross.values.max()+1, 10000000))
+
+# Add grid lines to the plot
+plt.grid(axis='x', which='major', linestyle='--', color='gray', alpha=0.5)
+plt.grid(axis='y', which='major', linestyle='--', color='gray', alpha=0.5)
+
+# Display the plot
+plt.show()
+								
+								</code></pre>
+						</section>
+						<section>
+							<h3>Visualization of Average Yearly Metascore of Movies</h3><pre><code class="language-python">
+
+# Replace NAType values in Meta_score column with NaN
+df['Meta_score'].fillna(np.nan, inplace=True)
+
+# Drop rows with NaN values in Meta_score column
+df.dropna(subset=['Meta_score'], inplace=True)
+
+# Group the data by release year and calculate the average Meta_score for each year
+yearly_meta_score = df.groupby('Released_Year')['Meta_score'].mean().astype(float)
+
+# Calculate the line of best fit
+fit = np.polyfit(yearly_meta_score.index, yearly_meta_score.values, 1)
+
+# Define the function for the line of best fit
+fit_fn = np.poly1d(fit)
+
+# Plot the results and the line of best fit
+plt.plot(yearly_meta_score.index, yearly_meta_score.values)
+plt.plot(yearly_meta_score.index, fit_fn(yearly_meta_score.index), '--r')
+plt.xlabel('Release Year')
+plt.ylabel('Average Meta Score per Year')
+plt.title('Correlation between Release Year and Rating')
+
+# Set the step size of the x-axis label to 5 years
+plt.xticks(np.arange(1920, yearly_meta_score.index.max()+5, 5))
+
+# Set the step size of the y-axis label to 100 million dollars
+plt.yticks(np.arange(65, 100, 5))
+
+# Add x-axis lines
+plt.grid(axis='x', which='major', linestyle='--', color='gray', alpha=0.5)
+
+# Add y-axis lines
+plt.grid(axis='y', which='major', linestyle='--', color='gray', alpha=0.5)
+
+plt.show()
+								
+								</code></pre>
+						</section>
+						<section>
+							<h3>Visualization of number of votes to Metascore</h3><pre><code class="language-python">
+
+# Set the figure size
+plt.figure(figsize=(10,6))
+
+# Create a scatter plot of number of votes vs. Metascore
+plt.scatter(np.divide(df['No_of_Votes'], 1000), df['Meta_score'])
+
+# Set the x-axis label and units
+plt.xlabel('Number of Votes (in thousands of votes)')
+
+# Set the y-axis label and units
+plt.ylabel('Metascore')
+
+# Set the title of the plot
+plt.title('Number of Votes vs. Metascore')
+
+# Set the step size of the x-axis label to 50, and rotate the labels by 90 degrees
+plt.xticks(range(0, 2500, 50), rotation=90)
+
+# Set the step size of the y-axis label to 10
+plt.yticks(range(0, 100, 10))
+
+# Display the plot
+plt.show()
+								
+								</code></pre>
+						</section>
+						<section>
+							<h3>Visualization of number of votes to IMDb Rating</h3><pre><code class="language-python">
+
+# Set the figure size
+plt.figure(figsize=(10,6))
+
+# Create a scatter plot of number of votes vs. IMDB rating
+plt.scatter(np.divide(df['No_of_Votes'], 1000), df['IMDB_Rating'])
+
+# Set the x-axis label and units
+plt.xlabel('Number of Votes (in thousands of votes)')
+
+# Set the y-axis label and units
+plt.ylabel('IMDB Rating')
+
+# Set the title of the plot
+plt.title('Number of Votes vs. IMDB Rating')
+
+# Set the step size of the x-axis label to 50, and rotate the labels by 90 degrees
+plt.xticks(range(0, 2500, 50), rotation=90)
+
+# Set the step size of the y-axis label to 1
+plt.yticks(range(0, 10, 1))
+
+# Display the plot
+plt.show()
+
+								</code></pre>
+					</section>
+					<!-- Footer -->
+					<footer>
+						<div class="pagination">
+							<a href="../data-analysis/imdb.html" class="previous">Prev</a>
+							<a href="../data-analysis/imdb.html" class="page">1</a>
+							<a class="page active">2</a>
+							
+						</div>
+					</footer>
+				</div>
+
+				<!-- Footer -->
+
+				<footer id="footer">
+				
+					<section>
+						<form method="post" action="https://formsubmit.co/brianbasnet98@gmail.com">
+							<div class="fields">
+								<div class="field">
+									<label for="name">Name</label>
+									<input type="text" name="name" id="name" />
+								</div>
+								<div class="field">
+									<label for="email">Email</label>
+									<input type="text" name="email" id="email" />
+								</div>
+								<div class="field">
+									<label for="message">Message</label>
+									<textarea name="message" id="message" rows="2"></textarea>
+								</div>
+							</div>
+							<ul class="actions">
+								<li><input type="submit" value="Send Message" /></li>
+							</ul>
+						</form>
+					</section>
+					<section class="split contact">
+						<section>
+							<h3>Phone</h3>
+							<p>+44 7342 241467</p>
+						</section>
+						<section>
+							<h3>Email</h3>
+							<p>brianbasnet98@gmail.com</p>
+						</section>
+						<section>
+							<h3>Social</h3>
+							<ul class="icons alt">
+								<li><a href="https://github.com/nocab-tech" target="_blank" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+							</ul>
+						</section>
+					</section>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+			<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+			<script>
+				hljs.highlightAll();
+			</script>
+
+	</body>
+</html>

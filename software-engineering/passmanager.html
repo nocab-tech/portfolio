@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Password Manager</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet"
+      			href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<a href="../index.html" class="logo">nocab</a>
+				</header>
+
+				<!-- Nav -->
+					<nav id="nav">
+						<ul class="links">
+							<li><a href="../index.html">Main Page</a></li>
+							<li><a href="../software-engineering/softwareengineering.html">Software Engineering</a></li>
+							<li><a href="../data-analysis/dataanalysis.html">Data Analysis</a></li>
+							<li><a href="../about.html">About</a></li>
+						</ul>
+						<ul class="icons">
+							<li><a href="https://github.com/nocab-tech" target="_blank" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+				<div id="main">
+
+					<!-- Post -->
+						<section class="post">
+							<header class="major">
+								<span class="date">3rd March 2023</span>
+								<h1>Password Manager</h1>
+								<h6>Version 0.0.2 On Going Project</h6>
+								<p>This project was started as way to practice and learn basic cryptography using Python. This project currently (Version 0.0.2) uses Cryptography.Fernet Python Module. I intend to use PBKDF2 to add brute force protection as well as Customtkinter and tkinter to create a user friendly GUI to add ease of use and to learn those technologies too.</p>
+								<a href="https://github.com/nocab-tech/nocabpassmanager" target="_blank" class="button"><i class="icon brands fa-github"></i> GitHub</button></a>
+							</header>
+						</section>
+						<section class="posts">
+							<article>
+								<header>
+									<h2>Webcrawler/Webscraper</h2>
+								</header>
+								<p>
+									1. Salt Key Creation and Loading System.<br />
+									2. Password File Creation, Loading and Saving System.<br />
+									3. Password Creation, Deletion and Retrieval System.<br />
+								</p>
+							</article>
+							<article>
+								<header>
+									<h2>Roadmap</h2>
+								</header>
+								<p>
+									[x] Add Error Catching<br />
+									[x] Add Delete Password System<br />
+									[x] Add Show all Passwords System<br />
+									[ ] Add Login System<br />
+									[ ] Use Login Password along with salt to create Key<br />
+									[ ] Add a Modern GUI<br />
+									[ ] Use PBFDK2<br />
+									[ ] Maybe Host on Website<br />
+									[ ] 256AES Encryption<br />
+								</p>
+							</article>
+						</section>
+						<section>
+							<header class="major">
+								<h3>Detailed Explanation of the Password Manager</h3>
+								<p>Below is my research and a detailed description of the code written for this project.</p>
+							</header>
+							<h3>Salt Key</h3><pre><code class="language-python">
+### Salt Key Creation and Retrieval System.
+## As long as you know the path of the Salt key it can be stored and accessed from anywhere in your system. (Or that is what is intended)
+
+	def create_key(self, path): ## Creates a Salt Key that can be saved anywhere on computer or external drive. Required for Decryption of Passwords.
+		self.key = Fernet.generate_key()
+		with open(path, 'wb') as f:
+			f.write(self.key)
+
+	def load_key(self, path): ## Loads your Salt Key from anywhere on your computer.
+		try:
+			with open(path, 'rb') as f:
+				self.key = f.read()
+		except FileNotFoundError:
+			return
+								</code></pre>
+							<p>This section of code is responsible for the creation and loading of the Salt Key. The salt key is generated using Fernet which is required for the encryption and decryption of the users data. The salt key will be used to create an irreversible hash which creates is more secure and protects from precomputed tables. (Rainbowtables)</p>
+							<p>The Salt Key will be generated and written on a file that can be moved and kept separate from the password file. Keeping the salt key and password file separate will allow for additional security as if your password file is happens to be accessed by those with malicious intent it will be very difficult to impossible to decrypt.</p>
+						</section>
+						<section>
+							<h3>Password File</h3><pre><code class="language-python">
+### Password File Creation and Retrieval System.
+## As long as you know the path of the password file this file can be stored and accessed from anywhere in the computer. (Or that is what is intended)
+
+	def create_password_file(self, path, initial_values=None): ## Creates a Password File that will store all of the encrypted data/passwords.
+		self.password_file = path
+
+		if initial_values is not None:
+			for key, value in initial_values.items():
+				self.add_password(key, value)
+
+	def load_password_file(self, path): ## Loads your Password File containing all your encrypted data/passwords.
+		self.password_file = path
+
+		try:
+			with open(path, 'r') as f:
+				for line in f:
+					encrypted_site, encrypted_username, encrypted_password = line.split(":")
+					site = Fernet(self.key).decrypt(encrypted_site.encode()).decode()
+					username = Fernet(self.key).decrypt(encrypted_username.encode()).decode()
+					password = Fernet(self.key).decrypt(encrypted_password.encode()).decode()
+					self.password_dict[site] = {'username': username, 'password': password}
+		except FileNotFoundError:
+			return
+		
+	def save_password_file(self): ## Saves your Password File. Required for the Delete Password Function.
+		with open(self.password_file, 'w') as f:
+			for site, credentials in self.password_dict.items():
+				encrypted_site = Fernet(self.key).encrypt(site.encode()).decode()
+				encrypted_username = Fernet(self.key).encrypt(credentials['username'].encode()).decode()
+				encrypted_password = Fernet(self.key).encrypt(credentials['password'].encode()).decode()
+				f.write(f"{encrypted_site}:{encrypted_username}:{encrypted_password}\n")
+								</code></pre>
+							<p>This section of code is responsible for the creation, loading and saving of the Password File. This file will be responsible for the storage of the all of the encrypted data such as your Site name, Username and Password. The encryption process is 128bit AES Encryption, AES uses the Salt key and the Plaintext user input to create the final ciphered data. This data is separately encrypted to protect all of the user inputs.</p>
+							<p>When loading the password file is will decrypt the file to ensure that the program/script will be able to properly read and accessed by user. The information is then encrypted if it was to be accessed outside of the program. When saving to the password file it will be written as an encrypted cipher. </p>
+							<p>To further improve this process I want to implement a final encryption process that uses 256bit AES as supposed to 128bit encryption. This will mean that brute forcing the data will take considerably longer.</p>
+						</section>
+						<section>
+							<h3>What I have learnt during this project</h3>
+							<p>During this project I learn about basic Cryptology and learnt how it is done in the professional industry. Whilst I know I have only scratched the surface of the security industry mainly Cryptology, I have also learnt that there are many ways that data can be accessed even outside of the password manager. For example I see many vulnerabilities within my system that can be exploited by a someone with malicious intent. Some of the vulnerabilities that I have seen is that all information in the password file is decrypted at once thus meaning even the data you aren't trying to access will have to be stored within your memory which can then be accessed even after the program has been closed.</p>
+							<p>My system also does not include a key derivation function. Whilst I intend on implementing this it at it current moment it is not protected from cracking attempts. Finally one vulnerability that I see is that I will not be able to keep up with the speed that the security industry evolves in.</p>
+							<p>Thus meaning, whilst this project was fun, informative and a great foundation to learn basic Cryptology this program that I have created SHOULD NOT be used. </p>
+						</section>
+
+				</div>
+
+				<!-- Footer -->
+
+				<footer id="footer">
+				
+					<section>
+						<form method="post" action="https://formsubmit.co/brianbasnet98@gmail.com">
+							<div class="fields">
+								<div class="field">
+									<label for="name">Name</label>
+									<input type="text" name="name" id="name" />
+								</div>
+								<div class="field">
+									<label for="email">Email</label>
+									<input type="text" name="email" id="email" />
+								</div>
+								<div class="field">
+									<label for="message">Message</label>
+									<textarea name="message" id="message" rows="2"></textarea>
+								</div>
+							</div>
+							<ul class="actions">
+								<li><input type="submit" value="Send Message" /></li>
+							</ul>
+						</form>
+					</section>
+					<section class="split contact">
+						<section>
+							<h3>Phone</h3>
+							<p>+44 7342 241467</p>
+						</section>
+						<section>
+							<h3>Email</h3>
+							<p>brianbasnet98@gmail.com</p>
+						</section>
+						<section>
+							<h3>Social</h3>
+							<ul class="icons alt">
+								<li><a href="https://github.com/nocab-tech" target="_blank" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+							</ul>
+						</section>
+					</section>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+			<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+			<script>
+				hljs.highlightAll();
+			</script>
+
+	</body>
+</html>

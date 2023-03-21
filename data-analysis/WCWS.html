@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Webcrawler - Webscraping</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet"
+      			href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+		<div id="wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<a href="../index.html" class="logo">nocab</a>
+				</header>
+
+				<!-- Nav -->
+					<nav id="nav">
+						<ul class="links">
+							<li><a href="../index.html">Main Page</a></li>
+							<li><a href="../software-engineering/softwareengineering.html">Software Engineering</a></li>
+							<li><a href="../data-analysis/dataanalysis.html">Data Analysis</a></li>
+							<li><a href="../about.html">About</a></li>
+						</ul>
+						<ul class="icons">
+							<li><a href="https://github.com/nocab-tech" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+				<div id="main">
+
+					<!-- Post -->
+						<section class="post">
+							<header class="major">
+								<span class="date">16th March 2023</span>
+								<h1>Webcrawling and Webscraping</h1>
+								<h6>Completed Project</h6>
+								<p>This project was started as way to practice and learn basic webcrawling and webscraping using Python as well as a way to learn how to use GitHub. This project currently uses Panda and BeautifulSoup Python Module. This project was inspired by my career aspiration in Data Analysis. I tried to simulate an actual workload in the project. Demonstrating the Creation of a Database and Processing of the Database.</p>
+								<p>Whilst I used a practice website to do this project, I have intentions of redoing this project with a real website to gather real life data on a particular subject. The Website I have in mind of crawling and scraping would be Amazon with the objective of performing a competition analysis between competitors of a particular industry or product.</p>
+								<a href="https://github.com/nocab-tech/wslearning" target="_blank" class="button"><i class="icon brands fa-github"></i> GitHub</button></a>
+							</header>
+						</section>
+						<section class="posts">
+							<article>
+								<header>
+									<h2>Webcrawler/Webscraper</h2>
+								</header>
+								<p>
+									1. Crawls and gathers urls of all categories to be scraped.<br />
+									2. Scrapes each page of all categories.<br />
+									3. Converts the data into a panda dataframe and then adds all info to a excel file.<br />
+								</p>
+								<header>
+									<h2>Basic Data Analysis</h2>
+								</header>
+								<p>
+									1. Processes and searches through the file and finds information.<br />
+								</p>
+							</article>
+							<article>
+								<header>
+									<h2>Roadmap</h2>
+								</header>
+								<p>
+									[x] Create the Crawler/Scraper<br />
+									[x] Add all data to an excel file<br />
+									[x] Find the Average Prices of each category<br />
+									[x] Find the Average Ratings of each category<br />
+									[x] Find the Book count of each Category<br />
+									[x] Create a script to check if any books are out of stock<br />
+									[ ] Implement function to gather more detailed info<br />
+								</p>
+							</article>
+						</section>
+						<section>
+							<header class="major">
+								<h3>Detailed Explanation of Webcrawler/Webscraper</h3>
+								<p>Below is my research and a detailed description of the code written for this project.</p>
+							</header>
+							<h3>Gathering the Category URLs</h3><pre><code class="language-python">
+## Parse the HTML content using Beautiful Soup
+soup = BeautifulSoup(response.content, 'html.parser')
+
+## Find the links to all the categories
+categories = soup.find('div', class_='side_categories').find_all('a')
+category_urls = [f"http://books.toscrape.com/{c['href']}" for c in categories]
+								</code></pre>
+							<p>The first section of the code is responsible for parsing the HTML. Parsing the HTML creates a parse tree which is used to gather information from the html to be used.</p>
+							<p>The second section of code is responsible for finding each category within the website using the class_='side_categories'. It will then create urls to be searched and scraped for each category.</p>
+						</section>
+						<section>
+							<h3>Finding all books within a category</h3><pre><code class="language-python">
+def scrape_category(category_url):
+	## Make a request to the first page of the category
+	page_url = category_url
+	response = requests.get(page_url)
+
+	## Parse the HTML content using Beautiful Soup
+	soup = BeautifulSoup(response.content, 'html.parser')
+
+	## Get the category name
+	category = soup.find('h1').text.strip()
+
+	## Find all the books in the category
+	book_info = []
+	while True:
+		books = soup.find_all('article', class_='product_pod')
+
+		## Extract the book information
+		for book in books:
+			title = book.find('h3').find('a')['title']
+			rating = ' '.join(book.find('p', class_='star-rating')['class']).replace('star-rating', '').strip()
+			price = book.find('p', class_='price_color').text.strip()
+			availability = book.find('p', class_='availability').text.strip()
+			book_info.append({'category': category, 'title': title, 'rating': rating, 'price': price, 'availability': availability})
+
+		## Checks if there is a next page
+		next_button = soup.find('li', class_='next')
+		if next_button is None:
+			break
+
+		## Make a request to the next page and update the soup object
+		page_url = category_url.replace('index.html', '') + next_button.find('a')['href']
+		response = requests.get(page_url)
+		soup = BeautifulSoup(response.content, 'html.parser')
+
+	return book_info
+
+## Scrape all categories and books
+all_books = []
+for category_url in category_urls:
+## Excludes the books category which includes all books. This category is Redundant.
+if "books_1" in category_url:
+	continue
+								</code></pre>
+							<p>This section of code is responsible for finding and scraping the information of all books within each category. This code checks for product_pods which contain the information of the books that will be scraped. The information that was scraped is the category, title, price, rating and availability. It then appends the book_info list with the gathered information.</p>
+							<p>It will then check if there is another page for the category by looking for the next button. If it finds the next button it will adjust the url to go to the next page by looking for the href for the next page. If it doesn't find a next button it will give a break to move on to the next section the while loop.</p>
+							<p>The final 2 lines of code will look for a category named books or books_1 which contains all the books in the website. Whilst it would be easier to scrape just this url for information of each book, I found that categories were not listed in the information for each book. Therefore I opted to ignore this category and scrape through the other categories.</p>
+						</section>
+						<section>
+							<h3>Converts the List to a Panda dataframe and then excel dataset</h3><pre><code class="language-python">
+## Converts the book information to a Pandas DataFrame
+df = pd.DataFrame(all_books)
+
+## Writes the DataFrame to an Excel file
+df.to_excel('book_info.xlsx', index=False)
+								</code></pre>
+							<p>This gathers the all_books list and converts it into a panda dataframe which is similar to excel. It will then sure that dataframe to convert it into an excel file which is usually the easiest way to read and interpret a given data set.</p>
+						</section>
+						<section>
+							<h3>What I have learnt during this project</h3>
+							<p>This project is one of my more lengthy projects. I made sure to do lots of research on ethical webscraping and crawling to ensure that I was scraping information that was allowed to be scraped. During this research I found <a href="https://toscrape.com"target="_blank">toscrape.com.</a></p>
+							<p>BeautifulSoup admittedly is one of the most difficult modules and technologies I have used. It took me the longest to understand the basics which is where most of the project time was spent. I wanted to make sure that I didn't just write code that worked by more importantly that I understood the code that I was writing.</p>
+							<p>Finally one of the main goals that I set for myself was to create a webscraping tool. I believe I have succeeded in this but the reason I set this goal is my interest with the processes of a Data Analyst. I did my best to understand the processes that a Data Analyst would do and tried to create a project to simulate a workload that a Data Analyst would do. After gaining understanding in this field using this project it has sparked my interest further which will inspire my future projects.</p>
+						</section>
+
+				</div>
+
+				<!-- Footer -->
+
+				<footer id="footer">
+				
+					<section>
+						<form method="post" action="https://formsubmit.co/brianbasnet98@gmail.com">
+							<div class="fields">
+								<div class="field">
+									<label for="name">Name</label>
+									<input type="text" name="name" id="name" />
+								</div>
+								<div class="field">
+									<label for="email">Email</label>
+									<input type="text" name="email" id="email" />
+								</div>
+								<div class="field">
+									<label for="message">Message</label>
+									<textarea name="message" id="message" rows="2"></textarea>
+								</div>
+							</div>
+							<ul class="actions">
+								<li><input type="submit" value="Send Message" /></li>
+							</ul>
+						</form>
+					</section>
+					<section class="split contact">
+						<section>
+							<h3>Phone</h3>
+							<p>+44 7342 241467</p>
+						</section>
+						<section>
+							<h3>Email</h3>
+							<p>brianbasnet98@gmail.com</p>
+						</section>
+						<section>
+							<h3>Social</h3>
+							<ul class="icons alt">
+								<li><a href="https://github.com/nocab-tech" target="_blank" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+							</ul>
+						</section>
+					</section>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+			<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+			<script>
+				hljs.highlightAll();
+			</script>
+
+	</body>
+</html>
